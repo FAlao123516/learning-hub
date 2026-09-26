@@ -1,0 +1,25 @@
+# .gitattributes —— 告诉 Git 怎么处理不同类型的文件
+#
+# 【为什么需要这个文件？】
+# Windows 和 Linux 表示「换行」用的字符不一样：
+#   Windows 用两个字符 CR+LF（回车+换行），Linux/Mac 用一个 LF。
+# 如果不统一，会出现两个讨厌的后果：
+#   1. 你在 Windows 上改一个字母，Git 却显示「整个文件都被改了」—— 因为它把每行都当成变了
+#   2. 代码在 Windows 上没问题，上传到 Linux 服务器（比如 GitHub Actions）就报奇怪的错
+#
+# 下面这一行的意思：所有文本文件在 Git 仓库里统一存成 LF，
+# 检出到你的 Windows 电脑上时再自动转回 CRLF。两边都舒服。
+
+* text=auto eol=lf
+
+# 明确声明这些是二进制文件，不要让 Git 试图转换它们的换行符
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# package-lock.json 是自动生成的，在代码审查时默认折叠起来，减少噪音
+package-lock.json linguist-generated=true
