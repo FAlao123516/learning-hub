@@ -11,6 +11,7 @@
     "deploy": "node tools/deploy.mjs",
     "test": "node src/lib/srs.test.mjs",
     "test:e2e": "node tests/e2e.test.mjs",
+    "test:pwa": "node tests/pwa.test.mjs",
     "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
