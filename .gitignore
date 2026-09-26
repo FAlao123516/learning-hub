@@ -1,0 +1,24 @@
+# 依赖包（别人用 npm install 就能重新下载，不需要放进仓库）
+node_modules/
+
+# 打包产物（由 npm run build 生成）
+dist/
+
+# 测试截图与临时文件
+screenshots/
+tmp-download/
+
+# 操作系统 / 编辑器产生的垃圾文件
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# 环境变量文件：里面常常放着密码、API 密钥，绝对不能提交！
+# 【术语：为什么这条很重要？】
+# Git 的历史是「永久」的。一旦把密钥提交上去，就算你下一个版本删掉，
+# 它依然留在历史记录里，能被任何人翻出来。每年都有公司因为这一条泄漏密钥。
+.env
+.env.local
+.env.*.local

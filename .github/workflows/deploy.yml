@@ -1,0 +1,76 @@
+# 这是「持续部署」的配置文件。
+#
+# 【术语：CI/CD（持续集成 / 持续部署）】
+# CI = 你每次把代码推上去，服务器自动帮你跑一遍检查（比如跑测试）。
+# CD = 检查通过后，自动打包并发布到网站上。
+#
+# 好处：你以后改完代码，只需要敲一句 git push，
+# 网站会自己在几十秒内更新好。不用记住「先 build、再上传 dist」这些步骤。
+# 顺带解决了一个新手常见事故：忘记重新打包，导致线上还是旧版本。
+#
+# 【这个文件要怎么读？】
+# 它是一门叫 YAML 的配置语言，靠「缩进」表示层级关系（不能用 Tab，只能用空格）。
+# 你可以把它当成一份「给服务器的操作清单」，从上往下依次执行。
+
+name: 部署到 GitHub Pages
+
+# 什么时候触发这个流程
+on:
+  push:
+    branches: [main] # 只要往 main 分支推代码就触发
+  workflow_dispatch: # 也允许在网页上手动点一下触发
+
+# 权限声明：告诉 GitHub 这个流程需要哪些权限。
+# 【安全提示】最小权限原则 —— 只申请真正需要的，不多要。
+permissions:
+  contents: read # 读代码
+  pages: write # 写 Pages 网站
+  id-token: write # 用安全令牌跟 Pages 服务通信
+
+# 如果连续推了多次，只保留最后一次，避免几个部署任务互相打架
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # 第一步：打包
+  build:
+    runs-on: ubuntu-latest # 借用 GitHub 免费提供的一台 Linux 机器
+    steps:
+      - name: 取出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm # 缓存依赖包，下次构建快很多
+
+      - name: 安装依赖
+        run: npm ci # ci 比 install 更严格：完全按 package-lock.json 装，保证结果可复现
+
+      - name: 跑算法测试
+        run: npm test # 测试不通过就中止，坏代码不会上线
+
+      - name: 打包
+        run: npm run build
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传打包结果
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  # 第二步：发布（必须等第一步成功）
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 发布到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

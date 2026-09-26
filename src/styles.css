@@ -1,0 +1,552 @@
+:root {
+  /* 【术语：CSS 变量】
+     下面这些 --开头的名字，是「样式变量」。
+     定义一次，全站复用。以后想换主题色，只改这里一行，所有地方一起变。
+     这是专业前端的基本功，也是「设计系统」的最小雏形。 */
+  --bg: #f4f5fb;
+  --surface: #ffffff;
+  --surface-2: #eef0f8;
+  --border: #e2e5f0;
+  --text: #16192b;
+  --text-dim: #6b7189;
+  --primary: #4f46e5;
+  --primary-soft: #eef0ff;
+  --rate-again: #ef4444;
+  --rate-hard: #f59e0b;
+  --rate-good: #10b981;
+  --rate-easy: #3b82f6;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px rgba(16, 24, 40, 0.06);
+  --nav-h: 62px;
+}
+
+/* 深色模式：跟随系统设置自动切换。
+   prefers-color-scheme 是浏览器给的媒体查询，用户手机开了深色模式就命中。 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1120;
+    --surface: #151c30;
+    --surface-2: #1d2742;
+    --border: #283355;
+    --text: #eef1fa;
+    --text-dim: #9aa3bf;
+    --primary: #7c78ff;
+    --primary-soft: #1e2350;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  /* 手机上禁用横向滚动，避免一不小心整页左右晃 */
+  overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* ============ 布局骨架 ============ */
+
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 【术语：sticky / 粘性定位】
+   和「固定定位 fixed」的区别：fixed 是钉在屏幕上，
+   sticky 是「正常参与排版，滚到边界就粘住」。顶栏用它最合适。 */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 12px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.topbar .sub {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.page {
+  flex: 1;
+  padding: 16px 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px);
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============ 通用零件 ============ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.field .tip {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+input[type='text'],
+textarea {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  /* 【术语：font-size 16px 的坑】
+     手机浏览器（尤其 iOS）有个规则：输入框字号小于 16px 时，
+     点进去会自动把页面放大。所以这里不能写小。 */
+  font-size: 16px;
+  resize: vertical;
+}
+
+input[type='text']:focus,
+textarea:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface-2);
+  color: var(--text);
+  transition: transform 0.08s, opacity 0.15s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid var(--rate-again);
+  color: var(--rate-again);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--text-dim);
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-dim);
+}
+
+.empty .big {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+/* ============ 底部导航 ============ */
+
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 9px 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  position: relative;
+}
+
+.nav button.active {
+  color: var(--primary);
+}
+
+.nav .icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* 待复习数量的小红点 */
+.nav .badge {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  margin-left: 6px;
+  background: var(--rate-again);
+  color: #fff;
+  font-size: 10px;
+  min-width: 17px;
+  height: 17px;
+  line-height: 17px;
+  border-radius: 9px;
+  padding: 0 4px;
+  text-align: center;
+}
+
+/* ============ 今日 / 复习 ============ */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.stat .num {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.stat .label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.progress {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress > div {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+/* 复习时的卡片：正反面切换用一个翻转感的动画 */
+.flashcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 36px 22px;
+  text-align: center;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  animation: pop 0.18s ease;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.flashcard .term {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  /* 长单词（比如德语）也能自动换行不撑破 */
+  overflow-wrap: anywhere;
+}
+
+.flashcard .reading {
+  font-size: 16px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.flashcard .meaning {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.flashcard hr {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 14px 0;
+  width: 100%;
+}
+
+.flashcard .example {
+  font-size: 15px;
+  color: var(--text-dim);
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.rating-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rating-grid button {
+  border: none;
+  border-radius: 14px;
+  padding: 14px 10px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: transform 0.08s;
+}
+
+.rating-grid button:active {
+  transform: scale(0.97);
+}
+
+.rating-grid .hint {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* ============ 卡片列表 ============ */
+
+.search {
+  width: 100%;
+  background: var(--surface);
+}
+
+.card-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 13px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.card-item .body {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-item .word {
+  font-weight: 700;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.card-item .def {
+  font-size: 14px;
+  color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
+
+.card-item .meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 5px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 8px;
+  line-height: 1;
+  color: var(--text-dim);
+}
+
+.icon-btn:hover {
+  background: var(--surface-2);
+}
+
+/* 顶部小工具条 */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar .btn {
+  padding: 9px 13px;
+  font-size: 14px;
+}
+
+/* ============ 提示条 toast ============ */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px);
+  background: var(--text);
+  color: var(--bg);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 50;
+  animation: pop 0.2s ease;
+  max-width: 90vw;
+  text-align: center;
+}
+
+/* 说明性文字块（讲原理的地方） */
+.note {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.65;
+}
+
+.note b {
+  color: var(--text);
+}
+
+.note code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
+/* 桌面端稍微宽一点、导航也收窄居中，避免在电脑上看着奇怪 */
+@media (min-width: 700px) {
+  .nav {
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 18px 18px 0 0;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+}
